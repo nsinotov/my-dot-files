@@ -1,0 +1,29 @@
+# ===========================================
+# Global Git Ignore
+# ===========================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+.directory
+
+# Editor metadata
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Cursor IDE
+.cursor/
+
+# Claude Code
+.mcp.json
+**/.claude/settings.local.json
+
+# Shell history
+.history

@@ -1,0 +1,215 @@
+#!/bin/bash
+# ===========================================
+# VPN — OpenVPN connection manager
+# ===========================================
+# Commands: up, down, reconnect, status, log, fix
+# Requires: openvpn (brew install openvpn)
+#
+# Configuration via environment variables in ~/.config/dotfiles/.secrets:
+#   VPN_CONFIG_PATH   Path to .ovpn profile
+#   VPN_OPENVPN_BIN   Path to openvpn binary (auto-detected if not set)
+
+set -euo pipefail
+
+# ------------------------------------
+# Configuration (from environment)
+# ------------------------------------
+
+CONFIG="${VPN_CONFIG_PATH:-}"
+LOG="/tmp/openvpn.log"
+PID_FILE="/tmp/openvpn.pid"
+
+# Auto-detect openvpn binary if not set
+if [ -n "${VPN_OPENVPN_BIN:-}" ]; then
+  OPENVPN="$VPN_OPENVPN_BIN"
+elif command -v openvpn > /dev/null 2>&1; then
+  OPENVPN="$(command -v openvpn)"
+elif [ -x "/opt/homebrew/opt/openvpn/sbin/openvpn" ]; then
+  OPENVPN="/opt/homebrew/opt/openvpn/sbin/openvpn"
+else
+  echo "Error: openvpn not found. Install with: brew install openvpn"
+  exit 1
+fi
+
+if [ -z "$CONFIG" ]; then
+  echo "Error: VPN_CONFIG_PATH is not set in ~/.config/dotfiles/.secrets"
+  exit 1
+fi
+
+if [ ! -f "$CONFIG" ]; then
+  echo "Error: VPN config not found at $CONFIG"
+  exit 1
+fi
+
+# ------------------------------------
+# Colors
+# ------------------------------------
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+# ------------------------------------
+# Helpers
+# ------------------------------------
+
+is_running() {
+  pgrep -x openvpn > /dev/null 2>&1
+}
+
+start_openvpn() {
+  sudo "$OPENVPN" \
+    --config "$CONFIG" \
+    --daemon \
+    --log "$LOG" \
+    --writepid "$PID_FILE" \
+    --ping 10 \
+    --ping-restart 60 \
+    --persist-tun
+  sudo chmod a+r "$LOG" "$PID_FILE" 2>/dev/null
+}
+
+# ------------------------------------
+# Commands
+# ------------------------------------
+
+vpn_status() {
+  if is_running; then
+    local pid uptime remote
+    pid=$(pgrep -x openvpn)
+    uptime=$(ps -o etime= -p "$pid" 2>/dev/null | xargs)
+    remote=$(grep -m1 "TCP/UDP: Connecting\|Peer Connection Initiated" "$LOG" 2>/dev/null \
+      | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' || true)
+
+    echo -e "${GREEN}VPN is UP${NC}"
+    echo "  PID:     $pid"
+    echo "  Uptime:  $uptime"
+    [ -n "$remote" ] && echo "  Remote:  $remote"
+
+    if grep -q "Initialization Sequence Completed" "$LOG" 2>/dev/null; then
+      echo -e "  Status:  ${GREEN}Connected${NC}"
+    else
+      echo -e "  Status:  ${YELLOW}Connecting...${NC}"
+    fi
+  else
+    echo -e "${RED}VPN is DOWN${NC}"
+  fi
+}
+
+vpn_up() {
+  if is_running; then
+    echo -e "${YELLOW}VPN is already running${NC}"
+    vpn_status
+    return 0
+  fi
+
+  echo "Starting VPN..."
+  start_openvpn
+  sleep 3
+  vpn_status
+}
+
+vpn_down() {
+  if ! is_running; then
+    echo -e "${YELLOW}VPN is not running${NC}"
+    return 0
+  fi
+
+  echo "Stopping VPN..."
+  sudo killall openvpn
+  sleep 1
+  echo -e "${RED}VPN stopped${NC}"
+}
+
+vpn_reconnect() {
+  echo "Reconnecting VPN..."
+  sudo killall openvpn 2>/dev/null || true
+  sleep 2
+  start_openvpn
+  sleep 3
+  vpn_status
+}
+
+vpn_fix() {
+  echo "Fixing network..."
+  sudo killall openvpn 2>/dev/null || true
+  sleep 1
+
+  # Restore default route
+  local gateway
+  if [ "$(uname -s)" = "Darwin" ]; then
+    gateway=$(netstat -rn | awk '/^default.*en0/{print $2; exit}')
+  else
+    gateway=$(ip route show default 2>/dev/null | awk '{print $3; exit}')
+  fi
+  gateway="${gateway:-192.168.1.1}"
+
+  sudo route -n delete -net 0.0.0.0 > /dev/null 2>&1 || true
+  # Clean up tun/utun interfaces
+  for iface in $(ifconfig -l 2>/dev/null | tr ' ' '\n' | grep -E '^(tun|utun)'); do
+    sudo route -n delete -ifscope "$iface" default > /dev/null 2>&1 || true
+  done
+  sudo route -n add default "$gateway" > /dev/null 2>&1 || true
+  echo "  Routes cleaned, default gateway restored ($gateway)"
+
+  # Flush DNS cache
+  if [ "$(uname -s)" = "Darwin" ]; then
+    sudo dscacheutil -flushcache
+    sudo killall -HUP mDNSResponder 2>/dev/null || true
+  else
+    sudo systemd-resolve --flush-caches 2>/dev/null || true
+  fi
+  echo "  DNS cache flushed"
+
+  # Verify connectivity
+  sleep 2
+  if ping -c 1 -W 3 8.8.8.8 > /dev/null 2>&1; then
+    echo -e "${GREEN}Internet connection restored${NC}"
+  else
+    echo -e "${YELLOW}Restarting network interface...${NC}"
+    if [ "$(uname -s)" = "Darwin" ]; then
+      sudo ifconfig en0 down && sleep 1 && sudo ifconfig en0 up
+    else
+      sudo ip link set eth0 down && sleep 1 && sudo ip link set eth0 up
+    fi
+    sleep 3
+    if ping -c 1 -W 3 8.8.8.8 > /dev/null 2>&1; then
+      echo -e "${GREEN}Internet connection restored${NC}"
+    else
+      echo -e "${RED}Still no internet. Try toggling Wi-Fi off/on manually.${NC}"
+    fi
+  fi
+}
+
+vpn_log() {
+  if [ ! -f "$LOG" ]; then
+    echo "No log file found. Start VPN first."
+    return 1
+  fi
+  tail -f "$LOG"
+}
+
+# ------------------------------------
+# Entry point
+# ------------------------------------
+
+case "${1:-status}" in
+  up|start)       vpn_up ;;
+  down|stop)      vpn_down ;;
+  reconnect|restart) vpn_reconnect ;;
+  status)         vpn_status ;;
+  log)            vpn_log ;;
+  fix)            vpn_fix ;;
+  *)
+    echo "Usage: vpn {up|down|reconnect|status|log|fix}"
+    echo ""
+    echo "Commands:"
+    echo "  up, start       Start VPN connection"
+    echo "  down, stop      Stop VPN connection"
+    echo "  reconnect       Restart VPN connection"
+    echo "  status          Show connection status (default)"
+    echo "  log             Tail the VPN log"
+    echo "  fix             Fix network after unclean VPN shutdown"
+    ;;
+esac

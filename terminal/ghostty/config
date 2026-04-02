@@ -1,0 +1,68 @@
+# ===========================================
+# Ghostty Terminal Configuration
+# ===========================================
+
+# ------------------------------------
+# Font
+# ------------------------------------
+
+font-family = Monaspice Ne Nerd Font Mono
+font-size = 14
+
+# Monaspace stylistic sets — enable programming ligatures and alternates
+font-feature = calt
+font-feature = ss01
+font-feature = ss02
+font-feature = ss03
+font-feature = ss04
+font-feature = ss05
+font-feature = ss06
+font-feature = ss07
+font-feature = ss08
+
+# ------------------------------------
+# Theme
+# ------------------------------------
+
+theme = Catppuccin Mocha
+
+# ------------------------------------
+# Cursor
+# ------------------------------------
+
+cursor-style = block
+cursor-style-blink = true
+
+# ------------------------------------
+# Window
+# ------------------------------------
+
+# Borderless window (works well with AeroSpace tiling)
+window-decoration = false
+
+# Slight transparency with background blur
+background-opacity = 0.97
+background-blur-radius = 20
+
+# ------------------------------------
+# Behavior
+# ------------------------------------
+
+# Copy text on selection (no Cmd+C needed)
+copy-on-select = true
+
+# Shell integration for zsh (prompt markers, cwd tracking)
+shell-integration = zsh
+shell-integration-features = no-cursor
+
+# Skip "are you sure?" on close
+confirm-close-surface = false
+
+# New windows/tabs inherit the working directory
+window-inherit-working-directory = true
+
+# ------------------------------------
+# Keybindings
+# ------------------------------------
+
+keybind = cmd+ctrl+f=toggle_fullscreen

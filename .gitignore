@@ -1,0 +1,19 @@
+# Secrets — never commit
+.secrets
+*.secret
+*.key
+*.pem
+
+# macOS
+.DS_Store
+
+# Editor swap files
+*.swp
+*.swo
+*~
+
+# Test mode output
+build/
+
+# Neovim generated files
+editor/nvim/lazy-lock.json

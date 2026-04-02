@@ -1,0 +1,41 @@
+# ===========================================
+# Git Configuration
+# ===========================================
+# User identity is set by install.sh from ~/.config/dotfiles/.secrets variables:
+# GIT_USER_NAME and GIT_USER_EMAIL
+
+[core]
+	# Use global gitignore for patterns that apply everywhere
+	excludesFile = ~/.gitignore
+	# Prevent issues with filenames across macOS/Linux
+	precomposeunicode = true
+
+[init]
+	# Use "main" as default branch name
+	defaultBranch = main
+
+[pull]
+	# Rebase local commits on top of fetched changes (cleaner history)
+	rebase = true
+
+[push]
+	# Push only the current branch by default
+	default = current
+	# Automatically set up tracking on first push
+	autoSetupRemote = true
+
+[merge]
+	# Show common ancestor in merge conflict markers
+	conflictstyle = zdiff3
+
+[diff]
+	# Better diff algorithm for cleaner patches
+	algorithm = histogram
+
+[rerere]
+	# Remember conflict resolutions and auto-apply them
+	enabled = true
+
+[fetch]
+	# Remove remote-tracking branches that no longer exist on remote
+	prune = true
