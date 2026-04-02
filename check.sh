@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 # ===========================================
-# update.sh — Pull system configs back into the repo
+# check.sh — Verify symlinks, generated files, and repo status
 # ===========================================
-# For symlinked files, changes are already in the repo.
-# For generated files (.gitconfig), this script does not sync back
-# (they are generated from .secrets by install.sh).
+# Checks that all symlinks point to the repo, generated files exist,
+# and optionally commits any uncommitted changes.
 
 set -euo pipefail
 

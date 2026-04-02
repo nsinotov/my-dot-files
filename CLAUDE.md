@@ -42,5 +42,5 @@ Cross-tool integrations to be aware of:
 - **Comments.** English only. Group settings with `# ----` section headers. Every non-obvious setting gets a one-line explanation. No commented-out junk.
 - **Cross-platform.** Guard macOS-only features with OS detection. Shell and git configs must work on Linux too.
 - **Aliases.** Static aliases go in `shell/aliases/<topic>.sh`. Project-specific aliases go in `~/.config/dotfiles/.secrets` as `PROJECT_*` variables.
-- **Scripts.** When adding or removing a config, update both `install.sh` (link/generate) and `update.sh` (check).
+- **Scripts.** When adding or removing a config, update both `install.sh` (link/generate) and `check.sh` (verify).
 - **Structure.** See `README.md` for how the repo is organized and how to add new configs or projects.

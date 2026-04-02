@@ -100,7 +100,7 @@ format = "via [$symbol]($style)"
 format = "via [$symbol]($style)"
 
 [ocaml]
-format = "via [$symbol(\($switch_indicator$switch_name\) )]($style)"
+format = "via [$symbol]($style)"
 
 [odin]
 format = "via [$symbol]($style)"

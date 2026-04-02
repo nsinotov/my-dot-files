@@ -49,7 +49,10 @@ cp .secrets.example ~/.config/dotfiles/.secrets
 # 3. Install (symlinks configs, generates project aliases)
 chmod +x install.sh && ./install.sh
 
-# 4. Install tmux plugins (inside tmux)
+# 4. Verify everything is set up correctly
+./check.sh
+
+# 5. Install tmux plugins (inside tmux)
 # Press Ctrl+S, then I
 ```
 
