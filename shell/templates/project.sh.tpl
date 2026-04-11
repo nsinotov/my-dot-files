@@ -24,6 +24,22 @@
 #   PROJECT_<N>_DIR         Directory containing project repos
 #   PROJECT_<N>_GIT_EMAIL   Git email override for repos in that directory
 #
+# Optional (git worktree management):
+#
+#   PROJECT_<N>_WT_REPO       Path to the git repository (may differ from DIR)
+#   PROJECT_<N>_WT_BRANCH     Base branch for new worktrees (default: main)
+#   PROJECT_<N>_WT_ENV_FILES  Space-separated list of env files to copy from main repo
+#   PROJECT_<N>_WT_INSTALL    Command to install dependencies in new worktree
+#
+# Worktrees are placed as siblings to the repo: <repo>-<task-id>
+# e.g. ~/projects/myapp-DEV-1234
+#
+# When WT_REPO is set, three functions are generated:
+#
+#   <name>-wt-new <task-id>    Create worktree, copy env files, install deps, cd into it
+#   <name>-wt-done <task-id>   Remove worktree and delete the local branch
+#   <name>-wt-ls               List all worktrees for the project
+#
 # Example ~/.config/dotfiles/.secrets entry:
 #
 #   PROJECT_1_NAME=myapp
@@ -34,6 +50,9 @@
 #   PROJECT_1_TEST="yarn nx affected --target=test --maxParallel=2"
 #   PROJECT_1_E2E="yarn nx e2e app-e2e --watch"
 #   PROJECT_1_REINSTALL="find . -name node_modules -type d -prune -exec rm -rf {} + && yarn"
+#   PROJECT_1_WT_REPO="$HOME/projects/myapp"
+#   PROJECT_1_WT_ENV_FILES=".env apps/app/.env apps/api/.env"
+#   PROJECT_1_WT_INSTALL="pnpm install"
 #
 # Generated output (~/.aliases.d/project-myapp.sh):
 #
@@ -42,6 +61,10 @@
 #   alias myapp-test='yarn nx affected --target=test --maxParallel=2'
 #   alias myapp-e2e='yarn nx e2e app-e2e --watch'
 #   alias myapp-reinstall='find . -name node_modules -type d -prune -exec rm -rf {} + && yarn'
+#
+#   myapp-wt-new()  { ... }   # Create worktree for a task
+#   myapp-wt-done() { ... }   # Remove worktree and branch
+#   myapp-wt-ls()   { ... }   # List all worktrees
 #
 # Generated git identity (~/.gitconfig-myapp):
 #

@@ -319,6 +319,11 @@ for i in $(seq 1 99); do
   test_var="PROJECT_${i}_TEST";           test_cmd="${!test_var:-}"
   e2e_var="PROJECT_${i}_E2E";             e2e="${!e2e_var:-}"
   reinstall_var="PROJECT_${i}_REINSTALL"; reinstall="${!reinstall_var:-}"
+  wt_repo_var="PROJECT_${i}_WT_REPO";     wt_repo="${!wt_repo_var:-}"
+  wt_branch_var="PROJECT_${i}_WT_BRANCH"; wt_branch="${!wt_branch_var:-main}"
+  wt_env_var="PROJECT_${i}_WT_ENV_FILES"; wt_env="${!wt_env_var:-}"
+  wt_install_var="PROJECT_${i}_WT_INSTALL"; wt_install="${!wt_install_var:-}"
+  dir_var="PROJECT_${i}_DIR";             dir="${!dir_var:-}"
 
   outfile="$ALIASES_DIR/project-${name}.sh"
   cat > "$outfile" <<PROJEOF
@@ -332,6 +337,64 @@ PROJEOF
   [ -n "$test_cmd" ]  && echo "alias ${name}-test='${test_cmd}'"     >> "$outfile"
   [ -n "$e2e" ]       && echo "alias ${name}-e2e='${e2e}'"           >> "$outfile"
   [ -n "$reinstall" ] && echo "alias ${name}-reinstall='${reinstall}'" >> "$outfile"
+
+  if [ -n "$wt_repo" ]; then
+    cat >> "$outfile" <<WTEOF
+
+${name}-wt-new() {
+  local task="\$1"
+  local base_branch="\${2:-${wt_branch}}"
+  if [ -z "\$task" ]; then
+    echo "Usage: ${name}-wt-new <task-id> [base-branch]"
+    return 1
+  fi
+  local project_dir="${wt_repo}"
+  local wt_path="\$(dirname "\$project_dir")/\$(basename "\$project_dir")-\$task"
+  git -C "\$project_dir" fetch origin
+  git -C "\$project_dir" worktree add "\$wt_path" -b "feature/\$task" "origin/\$base_branch"
+WTEOF
+
+    if [ -n "$wt_env" ]; then
+      for env_file in $wt_env; do
+        cat >> "$outfile" <<ENVEOF
+  if [ -f "\$project_dir/${env_file}" ]; then
+    mkdir -p "\$(dirname "\$wt_path/${env_file}")"
+    cp "\$project_dir/${env_file}" "\$wt_path/${env_file}"
+  fi
+ENVEOF
+      done
+    fi
+
+    if [ -n "$wt_install" ]; then
+      cat >> "$outfile" <<INSTEOF
+  (cd "\$wt_path" && ${wt_install})
+INSTEOF
+    fi
+
+    cat >> "$outfile" <<WTEOF2
+  cd "\$wt_path"
+  echo "Worktree ready: \$wt_path"
+}
+
+${name}-wt-done() {
+  local task="\$1"
+  if [ -z "\$task" ]; then
+    echo "Usage: ${name}-wt-done <task-id>"
+    return 1
+  fi
+  local project_dir="${wt_repo}"
+  local wt_path="\$(dirname "\$project_dir")/\$(basename "\$project_dir")-\$task"
+  cd "\$project_dir"
+  git worktree remove "\$wt_path"
+  git branch -d "feature/\$task"
+  echo "Worktree removed: \$task"
+}
+
+${name}-wt-ls() {
+  git -C "${wt_repo}" worktree list
+}
+WTEOF2
+  fi
 
   success "Project: ${name}" "→ $outfile"
 done
