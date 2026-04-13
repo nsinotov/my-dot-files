@@ -73,6 +73,30 @@ PROJECT_1_ENV="NODE_OPTIONS=--max-old-space-size=8192"
 
 This generates aliases: `myapp-app`, `myapp-api`, `myapp-test`, `myapp-e2e`, `myapp-reinstall`.
 
+### Worktree management
+
+Add worktree variables to enable `wt-new`, `wt-done`, and `wt-ls` functions:
+
+```bash
+PROJECT_1_WT_REPO="$HOME/projects/myapp"
+PROJECT_1_WT_BRANCH=main                              # base branch for new worktrees (default: main)
+PROJECT_1_WT_ENV_FILES=".env apps/app/.env"            # env files copied from main repo
+PROJECT_1_WT_INSTALL="pnpm install"                    # run after worktree creation
+PROJECT_1_TMUX_WINDOWS="main:4:tiled claude:1 ide:1"   # optional tmux session layout
+```
+
+Generated functions:
+
+| Function | Description |
+| --- | --- |
+| `myapp-wt-new <branch>` | Create worktree, copy env files, install deps, open tmux session (if configured) |
+| `myapp-wt-done <branch>` | Remove worktree + directory, delete local branch, kill tmux session |
+| `myapp-wt-ls` | List all worktrees for the project |
+
+`TMUX_WINDOWS` format is `"name:panes[:layout]"` — each entry creates a tmux window with the given number of panes. Layout is optional (e.g. `tiled`, `even-horizontal`).
+
+`wt-done` has a safety guard that refuses to remove the main project directory or primary worktree.
+
 See `shell/templates/` for full documentation on the template system.
 
 ## Key Design Decisions

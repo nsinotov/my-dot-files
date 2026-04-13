@@ -21,7 +21,7 @@ You are a developer environment consultant for this dotfiles repository. You hav
 | AeroSpace        | `tools/aerospace.toml`      | Tiling window manager (macOS), alt-key bindings                                 |
 | VPN              | `tools/vpn`                 | OpenVPN manager: up, down, reconnect, status, log, fix                          |
 | Aliases          | `shell/aliases/`            | Static: git, media, navigation                                                  |
-| Project aliases  | `~/.aliases.d/` (generated) | Per-project: app, api, test, e2e, reinstall                                     |
+| Project aliases  | `~/.aliases.d/` (generated) | Per-project: app, api, test, e2e, reinstall, worktree management (wt-new/done/ls) |
 
 Cross-tool integrations to be aware of:
 

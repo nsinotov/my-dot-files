@@ -323,6 +323,7 @@ for i in $(seq 1 99); do
   wt_branch_var="PROJECT_${i}_WT_BRANCH"; wt_branch="${!wt_branch_var:-main}"
   wt_env_var="PROJECT_${i}_WT_ENV_FILES"; wt_env="${!wt_env_var:-}"
   wt_install_var="PROJECT_${i}_WT_INSTALL"; wt_install="${!wt_install_var:-}"
+  wt_tmux_var="PROJECT_${i}_TMUX_WINDOWS"; wt_tmux="${!wt_tmux_var:-}"
   dir_var="PROJECT_${i}_DIR";             dir="${!dir_var:-}"
 
   outfile="$ALIASES_DIR/project-${name}.sh"
@@ -376,10 +377,50 @@ ENVEOF
 INSTEOF
     fi
 
+    # Tmux session creation (optional, from TMUX_WINDOWS config)
+    if [ -n "$wt_tmux" ]; then
+      first_tmux_window=true
+      for win_spec in $wt_tmux; do
+        IFS=':' read -r win_name win_panes win_layout <<< "$win_spec"
+        win_panes="${win_panes:-1}"
+        if [ "$first_tmux_window" = true ]; then
+          cat >> "$outfile" <<TMUXEOF
+  local session_name="${name}-\$sanitized"
+  tmux new-session -d -s "\$session_name" -n "${win_name}" -c "\$wt_path"
+TMUXEOF
+          first_tmux_window=false
+        else
+          cat >> "$outfile" <<TMUXEOF
+  tmux new-window -t "\$session_name" -n "${win_name}" -c "\$wt_path"
+TMUXEOF
+        fi
+        for ((p=2; p<=win_panes; p++)); do
+          cat >> "$outfile" <<TMUXEOF
+  tmux split-window -t "\$session_name:${win_name}" -c "\$wt_path"
+TMUXEOF
+        done
+        if [ -n "${win_layout:-}" ]; then
+          cat >> "$outfile" <<TMUXEOF
+  tmux select-layout -t "\$session_name:${win_name}" "${win_layout}"
+TMUXEOF
+        fi
+      done
+      cat >> "$outfile" <<TMUXEOF
+  tmux select-window -t "\$session_name:1"
+  tmux select-pane -t "\$session_name:1.1"
+  echo "Tmux session created: \$session_name"
+TMUXEOF
+    fi
+
     cat >> "$outfile" <<WTEOF2
   cd "\$wt_path"
   echo "Worktree ready: \$wt_path"
 }
+
+WTEOF2
+
+    # wt-done function
+    cat >> "$outfile" <<WTDONE_HDR
 
 ${name}-wt-done() {
   local branch="\$1"
@@ -391,27 +432,73 @@ ${name}-wt-done() {
   local sanitized="\${branch//\//-}"
   local wt_path="\$(dirname "\$project_dir")/${name}-\$sanitized"
   local removed=()
+WTDONE_HDR
+
+    cat >> "$outfile" <<WTDONE_CLEANUP
   cd "\$project_dir"
+  local wt_name="${name}-\$sanitized"
+  # Guard: never remove the main project directory or primary worktree
+  local main_wt
+  main_wt="\$(git -C "\$project_dir" worktree list --porcelain 2>/dev/null | head -1)"
+  main_wt="\${main_wt#worktree }"
+  if [ "\$wt_path" = "\$project_dir" ] || [ "\$wt_path" = "\$main_wt" ]; then
+    echo "Error: refusing to remove the main project directory"
+    return 1
+  fi
   if git worktree remove "\$wt_path" 2>/dev/null; then
-    removed+=("worktree \$wt_path")
+    removed+=("worktree \$wt_name")
+    removed+=("directory \$wt_name")
   elif [ -d "\$wt_path" ]; then
     rm -rf "\$wt_path"
-    removed+=("directory \$wt_path")
+    removed+=("directory \$wt_name")
   fi
   if git branch -d "\$branch" 2>/dev/null; then
     removed+=("branch \$branch")
   fi
+WTDONE_CLEANUP
+
+    if [ -n "$wt_tmux" ]; then
+      cat >> "$outfile" <<WTDONE_TMUX
+  local session_name="${name}-\$sanitized"
+  if tmux has-session -t "\$session_name" 2>/dev/null; then
+    removed+=("tmux session \$session_name")
+  fi
+WTDONE_TMUX
+    fi
+
+    cat >> "$outfile" <<WTDONE_REPORT
   if [ \${#removed[@]} -eq 0 ]; then
     echo "Nothing to clean up for \$branch"
   else
-    echo "Removed: \${removed[*]}"
+    echo "Removed:"
+    for item in "\${removed[@]}"; do
+      echo "  \$item"
+    done
   fi
+WTDONE_REPORT
+
+    if [ -n "$wt_tmux" ]; then
+      cat >> "$outfile" <<WTDONE_KILL
+  if tmux has-session -t "\$session_name" 2>/dev/null; then
+    if [ -n "\$TMUX" ] && [ "\$(tmux display-message -p '#S')" = "\$session_name" ]; then
+      local other_session
+      other_session=\$(tmux list-sessions -F '#S' | grep -v "^\${session_name}\\\$" | head -1)
+      if [ -n "\$other_session" ]; then
+        tmux switch-client -t "\$other_session"
+      fi
+    fi
+    tmux kill-session -t "\$session_name"
+  fi
+WTDONE_KILL
+    fi
+
+    cat >> "$outfile" <<WTDONE_END
 }
 
 ${name}-wt-ls() {
   git -C "${wt_repo}" worktree list
 }
-WTEOF2
+WTDONE_END
   fi
 
   success "Project: ${name}" "→ $outfile"
