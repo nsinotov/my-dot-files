@@ -37,8 +37,9 @@
 #
 # When WT_REPO is set, three functions are generated:
 #
-#   <name>-wt-new <branch>    Create worktree, copy env files, install deps, cd into it
-#   <name>-wt-done <branch>   Remove worktree and delete the local branch
+#   <name>-wt-new <branch>    Create worktree (uses remote branch if exists, otherwise
+#                             creates from base branch), copy env files, install deps, cd into it
+#   <name>-wt-done <branch>   Clean up worktree directory and local branch, report what was removed
 #   <name>-wt-ls              List all worktrees for the project
 #
 # Example ~/.config/dotfiles/.secrets entry:
@@ -63,8 +64,8 @@
 #   alias myapp-e2e='yarn nx e2e app-e2e --watch'
 #   alias myapp-reinstall='find . -name node_modules -type d -prune -exec rm -rf {} + && yarn'
 #
-#   myapp-wt-new()  { ... }   # Create worktree for a task
-#   myapp-wt-done() { ... }   # Remove worktree and branch
+#   myapp-wt-new()  { ... }   # Create worktree (pulls remote branch if exists)
+#   myapp-wt-done() { ... }   # Clean up worktree and local branch
 #   myapp-wt-ls()   { ... }   # List all worktrees
 #
 # Generated git identity (~/.gitconfig-myapp):

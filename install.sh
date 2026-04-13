@@ -352,7 +352,11 @@ ${name}-wt-new() {
   local sanitized="\${branch//\//-}"
   local wt_path="\$(dirname "\$project_dir")/${name}-\$sanitized"
   git -C "\$project_dir" fetch origin
-  git -C "\$project_dir" worktree add "\$wt_path" -b "\$branch" "origin/\$base_branch"
+  if git -C "\$project_dir" rev-parse --verify "origin/\$branch" >/dev/null 2>&1; then
+    git -C "\$project_dir" worktree add "\$wt_path" -b "\$branch" "origin/\$branch"
+  else
+    git -C "\$project_dir" worktree add "\$wt_path" -b "\$branch" "origin/\$base_branch"
+  fi
 WTEOF
 
     if [ -n "$wt_env" ]; then
@@ -386,10 +390,22 @@ ${name}-wt-done() {
   local project_dir="${wt_repo}"
   local sanitized="\${branch//\//-}"
   local wt_path="\$(dirname "\$project_dir")/${name}-\$sanitized"
+  local removed=()
   cd "\$project_dir"
-  git worktree remove "\$wt_path"
-  git branch -d "\$branch"
-  echo "Worktree removed: \$branch"
+  if git worktree remove "\$wt_path" 2>/dev/null; then
+    removed+=("worktree \$wt_path")
+  elif [ -d "\$wt_path" ]; then
+    rm -rf "\$wt_path"
+    removed+=("directory \$wt_path")
+  fi
+  if git branch -d "\$branch" 2>/dev/null; then
+    removed+=("branch \$branch")
+  fi
+  if [ \${#removed[@]} -eq 0 ]; then
+    echo "Nothing to clean up for \$branch"
+  else
+    echo "Removed: \${removed[*]}"
+  fi
 }
 
 ${name}-wt-ls() {
