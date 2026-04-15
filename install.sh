@@ -444,6 +444,7 @@ TMUXEOF
       cat >> "$outfile" <<TMUXEOF
   tmux select-window -t "\$session_name:1"
   tmux select-pane -t "\$session_name:1.1"
+  _tmux_resurrect_save
 TMUXEOF
     fi
 
@@ -501,6 +502,7 @@ WTDONE_GUARD
   if tmux has-session -t "\$session_name" 2>/dev/null; then
     tmux kill-session -t "\$session_name"
     removed+=("tmux: \$session_name")
+    _tmux_resurrect_save
   fi
 WTDONE_TMUX
     fi

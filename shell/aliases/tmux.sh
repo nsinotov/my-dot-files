@@ -3,6 +3,18 @@
 # ===========================================
 
 # ----
+# Trigger a tmux-resurrect snapshot silently.
+# Called after commands that create or remove sessions so the saved state
+# (restored with prefix+R) stays in sync without a manual prefix+S.
+_tmux_resurrect_save() {
+  local save_script="$HOME/.tmux/plugins/tmux-resurrect/scripts/save.sh"
+  # No-op when tmux isn't running or the plugin isn't installed.
+  [ -x "$save_script" ] || return 0
+  tmux has-session 2>/dev/null || return 0
+  "$save_script" quiet >/dev/null 2>&1 || true
+}
+
+# ----
 # Create (or attach to) a tmux session for a directory.
 # Usage: tmux-session <directory> [windows-spec]
 #
@@ -68,6 +80,8 @@ tmux-session() {
     tmux select-window -t "$name:1"
     tmux select-pane -t "$name:1.1"
   fi
+
+  _tmux_resurrect_save
 
   if [ -n "$TMUX" ]; then
     tmux switch-client -t "$name"
