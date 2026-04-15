@@ -20,7 +20,7 @@ You are a developer environment consultant for this dotfiles repository. You hav
 | Git              | `git/.gitconfig`            | Template — identity injected by `install.sh` from `~/.config/dotfiles/.secrets` |
 | AeroSpace        | `tools/aerospace.toml`      | Tiling window manager (macOS), alt-key bindings                                 |
 | VPN              | `tools/vpn`                 | OpenVPN manager: up, down, reconnect, status, log, fix, menu (fzf TUI)          |
-| Aliases          | `shell/aliases/`            | Static: git, media, navigation                                                  |
+| Aliases          | `shell/aliases/`            | Static: git, media, navigation, tmux (`tmux-session <dir>`)                     |
 | Project aliases  | `~/.aliases.d/` (generated) | Per-project: app, api, test, e2e, reinstall, worktree management (wt-new/done/ls) |
 
 Cross-tool integrations to be aware of:

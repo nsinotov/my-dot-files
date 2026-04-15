@@ -7,7 +7,7 @@ Developer environment configuration files for macOS/Linux.
 | Directory          | Tool             | Description                                                   |
 | ------------------ | ---------------- | ------------------------------------------------------------- |
 | `shell/`           | Zsh + Oh My Zsh  | Shell config, topic-based aliases, key bindings               |
-| `shell/aliases/`   | —                | Static aliases grouped by topic (git, media, navigation)      |
+| `shell/aliases/`   | —                | Static aliases grouped by topic (git, media, navigation, tmux) |
 | `shell/templates/` | —                | Documentation for generated project and account aliases       |
 | `terminal/`        | Ghostty          | Terminal emulator (Catppuccin Mocha, Monaspice font)          |
 | `editor/`          | Neovim (LazyVim) | Editor with Catppuccin theme, LSP support                     |
@@ -95,6 +95,8 @@ Generated functions:
 
 `TMUX_WINDOWS` format is `"name:panes[:layout]"` — each entry creates a tmux window with the given number of panes. Layout is optional (e.g. `tiled`, `even-horizontal`).
 
+Standalone equivalent: `tmux-session <dir> [windows-spec]` creates (or attaches to) a session for any directory using the same spec format. Session name = basename of the directory; on collision it becomes `<parent>-<basename>`. Default spec is `"main:4:tiled claude:1 ide:1"`, overridable via `TMUX_SESSION_WINDOWS`.
+
 `wt-done` has a safety guard that refuses to remove the main project directory or primary worktree.
 
 See `shell/templates/` for full documentation on the template system.
@@ -103,5 +105,5 @@ See `shell/templates/` for full documentation on the template system.
 
 - **Symlinks for static configs.** Edits on the system are edits in the repo — no manual sync needed.
 - **Generated files for anything with secrets.** `.gitconfig`, project aliases, and Claude account functions are built from `~/.config/dotfiles/.secrets` by `install.sh`. They are never committed.
-- **Topic-based alias files.** Aliases are split by concern (git, media, navigation), not dumped in one file.
+- **Topic-based alias files.** Aliases are split by concern (git, media, navigation, tmux), not dumped in one file.
 - **Catppuccin Mocha everywhere.** Consistent theme across Ghostty, Neovim, and Tmux.
