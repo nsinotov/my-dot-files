@@ -24,7 +24,7 @@ _tmux_resurrect_save() {
 #
 # Windows-spec format (same as PROJECT_<N>_TMUX_WINDOWS):
 #   Space-separated entries "name:panes[:layout]"
-#   Default: "main:4:tiled claude:1 ide:1"
+#   Default: "main:4:tiled agent:1 ide:1"
 tmux-session() {
   if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
     cat <<'HELP'
@@ -34,14 +34,14 @@ Create or attach to a tmux session named after the directory.
 On name collision the parent folder is prepended.
 
 Windows-spec: space-separated entries "name:panes[:layout]"
-  Default: "main:4:tiled claude:1 ide:1"
+  Default: "main:4:tiled agent:1 ide:1"
 Env: TMUX_SESSION_WINDOWS overrides the default when no spec is given.
 HELP
     return 0
   fi
 
   local dir="${1:-}"
-  local windows="${2:-${TMUX_SESSION_WINDOWS:-main:4:tiled claude:1 ide:1}}"
+  local windows="${2:-${TMUX_SESSION_WINDOWS:-main:4:tiled agent:1 ide:1}}"
 
   if [ -z "$dir" ]; then
     echo "Usage: tmux-session <directory> [windows-spec]" >&2

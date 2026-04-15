@@ -82,7 +82,7 @@ PROJECT_1_WT_REPO="$HOME/projects/myapp"
 PROJECT_1_WT_BRANCH=main                              # base branch for new worktrees (default: main)
 PROJECT_1_WT_ENV_FILES=".env apps/app/.env"            # env files copied from main repo
 PROJECT_1_WT_INSTALL="pnpm install"                    # run after worktree creation
-PROJECT_1_TMUX_WINDOWS="main:4:tiled claude:1 ide:1"   # optional tmux session layout
+PROJECT_1_TMUX_WINDOWS="main:4:tiled agent:1 ide:1"   # optional tmux session layout
 ```
 
 Generated functions:
@@ -95,7 +95,7 @@ Generated functions:
 
 `TMUX_WINDOWS` format is `"name:panes[:layout]"` — each entry creates a tmux window with the given number of panes. Layout is optional (e.g. `tiled`, `even-horizontal`).
 
-Standalone equivalent: `tmux-session <dir> [windows-spec]` creates (or attaches to) a session for any directory using the same spec format. Session name = basename of the directory; on collision it becomes `<parent>-<basename>`. Default spec is `"main:4:tiled claude:1 ide:1"`, overridable via `TMUX_SESSION_WINDOWS`.
+Standalone equivalent: `tmux-session <dir> [windows-spec]` creates (or attaches to) a session for any directory using the same spec format. Session name = basename of the directory; on collision it becomes `<parent>-<basename>`. Default spec is `"main:4:tiled agent:1 ide:1"`, overridable via `TMUX_SESSION_WINDOWS`.
 
 `wt-done` has a safety guard that refuses to remove the main project directory or primary worktree.
 
