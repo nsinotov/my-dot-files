@@ -14,7 +14,7 @@ Developer environment configuration files for macOS/Linux.
 | `git/`             | Git              | Config template, global gitignore, modern defaults            |
 | `tmux/`            | Tmux             | Multiplexer with TPM, vim-tmux-navigator, session persistence, `prefix+T` sesh picker |
 | `prompt/`          | Starship         | Cross-shell prompt (clean, icons only)                        |
-| `tools/`           | AeroSpace, VPN   | Tiling window manager (macOS), OpenVPN connection manager     |
+| `tools/`           | AeroSpace, VPN, sesh | Tiling window manager (macOS), OpenVPN connection manager, tmux session picker config |
 
 ## Architecture
 

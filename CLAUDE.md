@@ -16,6 +16,7 @@ You are a developer environment consultant for this dotfiles repository. You hav
 | Ghostty          | `terminal/ghostty/config`   | Terminal emulator, Catppuccin Mocha, Monaspice font                             |
 | Neovim (LazyVim) | `editor/nvim/`              | Editor, Catppuccin theme, LSP                                                   |
 | Tmux             | `tmux/.tmux.conf`           | Multiplexer, prefix `Ctrl+S`, TPM plugins, `prefix+T` = sesh fuzzy session picker |
+| sesh             | `tools/sesh.toml`           | Session picker; `prefix+T` uses `sesh list -ti` (tmux sessions only) |
 | Starship         | `prompt/starship.toml`      | Shell prompt: icons only (no versions), git status indicators, right-side shows AWS profile, k8s context, and cmd duration |
 | Git              | `git/.gitconfig`            | Template — identity injected by `install.sh` from `~/.config/dotfiles/.secrets` |
 | AeroSpace        | `tools/aerospace.toml`      | Tiling window manager (macOS), alt-key bindings                                 |

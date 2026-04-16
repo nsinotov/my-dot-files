@@ -52,6 +52,7 @@ check_symlink "$HOME/.config/ghostty/config"    "$DOTFILES_DIR/terminal/ghostty/
 check_symlink "$HOME/.config/nvim"              "$DOTFILES_DIR/editor/nvim"
 check_symlink "$HOME/.config/starship.toml"     "$DOTFILES_DIR/prompt/starship.toml"
 check_symlink "$HOME/.gitignore"                "$DOTFILES_DIR/git/.gitignore"
+check_symlink "$HOME/.config/sesh/sesh.toml"    "$DOTFILES_DIR/tools/sesh.toml"
 check_symlink "$HOME/.aerospace.toml"           "$DOTFILES_DIR/tools/aerospace.toml"
 check_symlink "$HOME/bin/vpn"                   "$DOTFILES_DIR/tools/vpn"
 

@@ -222,6 +222,7 @@ link_file "$DOTFILES_DIR/terminal/ghostty/config"   "$HOME/.config/ghostty/confi
 link_file "$DOTFILES_DIR/editor/nvim"               "$HOME/.config/nvim"
 link_file "$DOTFILES_DIR/prompt/starship.toml"      "$HOME/.config/starship.toml"
 link_file "$DOTFILES_DIR/git/.gitignore"            "$HOME/.gitignore"
+link_file "$DOTFILES_DIR/tools/sesh.toml"           "$HOME/.config/sesh/sesh.toml"
 
 if [ "$OS" = "Darwin" ]; then
   link_file "$DOTFILES_DIR/tools/aerospace.toml"    "$HOME/.aerospace.toml"

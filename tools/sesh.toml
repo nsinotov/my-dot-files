@@ -1,0 +1,16 @@
+# ===========================================
+# sesh configuration
+# ===========================================
+# Used by `prefix + T` in tmux to open a fuzzy session picker.
+# The picker is invoked as `sesh list -ti` (tmux sessions only,
+# with icons), so zoxide directories and tmuxinator entries
+# are filtered out at the call site rather than here.
+#
+# Add named, pre-configured sessions below. They will appear in
+# `sesh list -c` and can be launched with `sesh connect <name>`.
+# Example:
+#
+# [[session]]
+# name = "dotfiles"
+# path = "~/Playground/my-dot-files"
+# startup_command = "nvim ."
