@@ -5,6 +5,68 @@
 # Docs: https://starship.rs/config/
 
 # ------------------------------------
+# Prompt Layout
+# ------------------------------------
+# Left: directory + git context + language/tool indicators + newline + prompt char.
+# Right: environment context (AWS, k8s) and command duration — volatile info lives
+# on the right so the left stays stable and easy to scan.
+
+format = """\
+$directory\
+$git_branch\
+$git_status\
+$git_state\
+$bun$c$cmake$cobol$cpp$crystal$daml$dart$deno$dotnet$elixir$elm$erlang$fennel\
+$fortran$gleam$golang$gradle$haskell$haxe$helm$java$julia$kotlin$lua$meson\
+$mojo$nim$nodejs$ocaml$odin$opa$perl$php$pixi$pulumi$purescript$python$quarto\
+$raku$red$rlang$ruby$rust$scala$solidity$swift$typst$vagrant$vlang$xmake$zig\
+$line_break$character"""
+
+right_format = """$cmd_duration$aws$kubernetes"""
+
+# ------------------------------------
+# Command Duration
+# ------------------------------------
+# Show elapsed time for commands that take longer than 2s — surfaces slow tooling.
+
+[cmd_duration]
+min_time = 2000
+format = '[ took $duration]($style)'
+style = "yellow"
+
+# ------------------------------------
+# Git Status
+# ------------------------------------
+# High-signal repo state: dirty (*), ahead/behind (↑↓), staged/untracked counts.
+
+[git_status]
+format = '([\[$all_status$ahead_behind\]]($style) )'
+style = "red bold"
+conflicted = "="
+ahead = "↑${count}"
+behind = "↓${count}"
+diverged = "↕↑${ahead_count}↓${behind_count}"
+untracked = "?"
+stashed = "≡"
+modified = "!"
+staged = "+"
+renamed = "»"
+deleted = "✘"
+
+# ------------------------------------
+# AWS
+# ------------------------------------
+# Alias the default SSO profile so the prompt stays short.
+
+[aws]
+format = 'on [$symbol($profile )(\($region\) )]($style)'
+symbol = "☁ "
+style = "bold blue"
+
+[aws.profile_aliases]
+"nikolay.sinotov@callers.ai" = "callers"
+
+# ------------------------------------
 # Language Modules
 # ------------------------------------
 # Show language icon only (hide version numbers for a cleaner prompt)
