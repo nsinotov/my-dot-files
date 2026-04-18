@@ -1,4 +1,4 @@
-# my-dot-files
+# dotfiles
 
 Developer environment configuration files for macOS/Linux.
 
@@ -39,8 +39,8 @@ Developer environment configuration files for macOS/Linux.
 
 ```bash
 # 1. Clone the repo
-git clone <repo-url> ~/my-dot-files
-cd ~/my-dot-files
+git clone <repo-url> ~/dotfiles
+cd ~/dotfiles
 
 # 2. Set up secrets
 cp .secrets.example ~/.config/dotfiles/.secrets

@@ -12,5 +12,5 @@
 #
 # [[session]]
 # name = "dotfiles"
-# path = "~/Playground/my-dot-files"
+# path = "~/Playground/dotfiles"
 # startup_command = "nvim ."
