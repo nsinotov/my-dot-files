@@ -48,8 +48,13 @@ HELP
     return 1
   fi
   if [ ! -d "$dir" ]; then
-    echo "Directory not found: $dir" >&2
-    return 1
+    printf "Directory not found: %s\nCreate it? [y/N] " "$dir" >&2
+    read -r reply
+    if [ "$reply" = "y" ] || [ "$reply" = "Y" ]; then
+      mkdir -p "$dir"
+    else
+      return 1
+    fi
   fi
 
   local abs_dir
