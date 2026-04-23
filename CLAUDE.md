@@ -22,7 +22,7 @@ You are a developer environment consultant for this dotfiles repository. You hav
 | AeroSpace        | `tools/aerospace.toml`      | Tiling window manager (macOS), alt-key bindings                                 |
 | VPN              | `tools/vpn`                 | OpenVPN manager: up, down, reconnect, status, log, fix, menu (fzf TUI)          |
 | Aliases          | `shell/aliases/`            | Static: git, media, navigation, tmux (`tmux-session <dir>`)                     |
-| Project aliases  | `~/.aliases.d/` (generated) | Per-project: app, api, test, e2e, reinstall, worktree management (wt-new/done/ls) |
+| Project aliases  | `~/.aliases.d/` (generated) | Per-project: app, api, test, e2e, reinstall, worktree management (wt-new/done/ls). Optional `APP_PORT`/`API_PORT` enables auto-kill of previous server instances |
 | Listing          | `dotfiles` (generated)      | Lists every custom command grouped by category; `*` marks commands with `--help` |
 
 Cross-tool integrations to be aware of:

@@ -19,6 +19,16 @@
 #   PROJECT_<N>_E2E         Command to run e2e tests
 #   PROJECT_<N>_REINSTALL   Command to clean and reinstall deps
 #
+# Optional (auto-kill previous server on port):
+#
+#   PROJECT_<N>_APP_PORT    Port(s) the app listens on (space-separated if multiple)
+#   PROJECT_<N>_API_PORT    Port(s) the API listens on (space-separated if multiple)
+#
+#   When set, <name>-app / <name>-api will kill any process listening on those
+#   ports before starting the server. Kills the entire process tree (e.g.
+#   nx → remix → node) so the previous terminal returns to a prompt cleanly.
+#   Shared helpers live in ~/.aliases.d/_port-helpers.sh.
+#
 # Optional (per-project git identity):
 #
 #   PROJECT_<N>_DIR         Directory containing project repos
@@ -58,7 +68,9 @@
 #   PROJECT_1_DIR="$HOME/projects/myapp"
 #   PROJECT_1_GIT_EMAIL="work@company.com"
 #   PROJECT_1_APP="nx serve app"
+#   PROJECT_1_APP_PORT=3000
 #   PROJECT_1_API="nx serve api"
+#   PROJECT_1_API_PORT=8081
 #   PROJECT_1_TEST="yarn nx affected --target=test --maxParallel=2"
 #   PROJECT_1_E2E="yarn nx e2e app-e2e --watch"
 #   PROJECT_1_REINSTALL="find . -name node_modules -type d -prune -exec rm -rf {} + && yarn"
@@ -69,8 +81,8 @@
 #
 # Generated output (~/.aliases.d/project-myapp.sh):
 #
-#   alias myapp-app='nx serve app'
-#   alias myapp-api='nx serve api'
+#   alias myapp-app='_run_on_port 3000 -- nx serve app'
+#   alias myapp-api='_run_on_port 8081 -- nx serve api'
 #   alias myapp-test='yarn nx affected --target=test --maxParallel=2'
 #   alias myapp-e2e='yarn nx e2e app-e2e --watch'
 #   alias myapp-reinstall='find . -name node_modules -type d -prune -exec rm -rf {} + && yarn'

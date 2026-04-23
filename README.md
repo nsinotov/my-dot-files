@@ -64,14 +64,17 @@ Define project variables in `~/.config/dotfiles/.secrets` and re-run `install.sh
 # In ~/.config/dotfiles/.secrets
 PROJECT_1_NAME=myapp
 PROJECT_1_APP="nx serve app"
+PROJECT_1_APP_PORT=3000
 PROJECT_1_API="nx serve api"
+PROJECT_1_API_PORT=8081
 PROJECT_1_TEST="yarn test"
 PROJECT_1_E2E="yarn e2e"
 PROJECT_1_REINSTALL="rm -rf node_modules && yarn"
-PROJECT_1_ENV="NODE_OPTIONS=--max-old-space-size=8192"
 ```
 
 This generates aliases: `myapp-app`, `myapp-api`, `myapp-test`, `myapp-e2e`, `myapp-reinstall`.
+
+When `APP_PORT` or `API_PORT` is set, running `myapp-app` / `myapp-api` will automatically kill any process already listening on that port before starting the server. This lets you switch between worktrees without manually finding and stopping the old instance — just run the command and it takes over.
 
 ### Worktree management
 
