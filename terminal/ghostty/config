@@ -7,12 +7,18 @@
 # ------------------------------------
 
 font-family = Monaspice Ne Nerd Font Mono
-font-size = 13
+font-size = 14
 font-style-italic = Monaspice Rn Nerd Font Mono Italic
 font-style-bold-italic = Monaspice Rn Nerd Font Mono Bold Italic
 
 # Standard contextual alternates only (no fancy ligatures)
 font-feature = calt
+
+# Thicker strokes for better readability on Retina
+font-thicken = true
+
+# Extra vertical spacing between lines
+adjust-cell-height = 3
 
 # ------------------------------------
 # Theme
