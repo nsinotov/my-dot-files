@@ -7,6 +7,16 @@
 -- Or remove existing autocmds by their group name (which is prefixed with `lazyvim_` for the defaults)
 -- e.g. vim.api.nvim_del_augroup_by_name("lazyvim_wrap_spell")
 
+-- ---- Disable spell checking in markdown ----
+-- LazyVim's lazyvim_wrap_spell enables spell+wrap for markdown/gitcommit/tex.
+-- Wrap is useful; spell produces too many false positives on technical docs.
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "markdown" },
+  callback = function()
+    vim.opt_local.spell = false
+  end,
+})
+
 -- ---- Learning tracker ----
 require("lib.learning-tracker")
 
