@@ -55,8 +55,8 @@ if [ -s "$NVM_DIR/nvm.sh" ]; then
 fi
 
 # yarn & npm global binaries (only if installed)
-command -v yarn > /dev/null 2>&1 && export PATH="$PATH:$(yarn global bin)"
-command -v npm  > /dev/null 2>&1 && export PATH="$PATH:$(npm bin -g 2>/dev/null)"
+command -v yarn > /dev/null 2>&1 && export PATH="$PATH:$(cd ~ && yarn global bin)"
+command -v npm  > /dev/null 2>&1 && export PATH="$PATH:$(cd ~ && npm bin -g 2>/dev/null)"
 
 # zoxide — smarter cd (powers sesh's directory source)
 command -v zoxide > /dev/null 2>&1 && eval "$(zoxide init zsh)"
